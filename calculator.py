@@ -1,3 +1,84 @@
+def fraction_to_decimal(numerator: int, denominator: int) -> str:
+    """
+    Converts a fraction to its decimal representation as a string.
+
+    This function handles negative fractions, detects repeating decimal sequences, 
+    and correctly formats them with parentheses.
+
+    Parameters
+    ----------
+    numerator : int
+        The numerator of the fraction.
+    denominator : int
+        The denominator of the fraction (non-zero).
+
+    Returns
+    -------
+    str
+        The decimal representation of the fraction. If the decimal part repeats, 
+        the repeating sequence is enclosed in parentheses.
+
+    Notes
+    -----
+    - If the fraction is negative, a "-" sign is placed at the beginning.
+    - If the fraction is an integer, the function returns it as a string.
+    - If the decimal has a repeating sequence, it is enclosed in parentheses.
+    - A dictionary (`lookup`) is used to detect repeating decimals by storing 
+      the positions of remainders.
+
+    Examples
+    --------
+    >>> fraction_to_decimal(1, 2)
+    '0.5'
+
+    >>> fraction_to_decimal(2, 3)
+    '0.(6)'
+
+    >>> fraction_to_decimal(4, 333)
+    '0.(012)'
+
+    >>> fraction_to_decimal(-50, 8)
+    '-6.25'
+
+    >>> fraction_to_decimal(7, -12)
+    '-0.58(3)'
+
+    >>> fraction_to_decimal(1, 5)
+    '0.2'
+    """
+    if numerator == 0:
+        return "0"
+    result = []
+    if (numerator < 0 < denominator) or (denominator < 0 < numerator):
+        result.append("-")
+
+    # we might forget about handling with sign and operate on asb values:
+    numerator = abs(numerator)
+    denominator = abs(denominator)
+    integer_part = numerator // denominator
+    result.append(str(integer_part))
+    reminder = numerator % denominator
+
+    # it may happen that reminder is sero then we have integer number
+    if reminder == 0:
+        return "".join(result)
+
+    # otherwise there will be for sure decimal part that must be separated by character '.'
+    result.append('.')
+    # dictionary to store place in decimal key: reminder, value: len of fraction, so position of reminder
+    lookup = {}
+    while reminder != 0:
+        if reminder in lookup:
+            result.insert(lookup[reminder], "(")
+            result.append(')')
+            break
+        lookup[reminder] = len(result)
+        reminder *= 10
+        result.append(str(reminder // denominator))
+        reminder %= denominator
+    return "".join(result)
+
+
 class Calculator:
     """
     A simple calculator class that provides basic arithmetic operations.
